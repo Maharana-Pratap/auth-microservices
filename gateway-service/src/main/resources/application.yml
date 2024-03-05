@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+  application:
+    name: api-gateway
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      routes:
+        - id: ADMISSION-SERVICE
+          uri: lb://ADMISSION-SERVICE
+          predicates:
+            - Path=/admission/**
+          filters:
+            - AuthenticationFilter
+
+        - id: COLLAGE-SERVICE
+          uri: lb://COLLAGE-SERVICE
+          predicates:
+            - Path=/collage/**
+          filters:
+            - AuthenticationFilter
+
+        - id: AUTH-SERVICE
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+eureka:
+  client:
+    service-url:
+      - http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+logging:
+  level:
+    - trace
